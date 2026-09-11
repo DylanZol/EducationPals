@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.env
+.DS_Store
+*.zip
+dist/
+
+# Keep generated review artifacts, but never commit credentials or raw secrets.
+agent/cache/*.tmp

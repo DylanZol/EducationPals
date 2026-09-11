@@ -1,0 +1,26 @@
+{
+  "submission": {
+    "topic": "Evals and LLM-as-Judge",
+    "audience": "Someone who shipped an AI feature and cannot tell if it is getting worse",
+    "capstone": "A working grader printing a confusion matrix, precision, and recall",
+    "learner_minutes": 90,
+    "lesson_count": 3,
+    "max_sections_per_lesson": 5,
+    "section_word_min": 300,
+    "section_word_max": 500,
+    "build_minutes_max": 20
+  },
+  "generation": {
+    "model": "gpt-5.6-sol",
+    "store_api_responses": false,
+    "max_revision_rounds": 1
+  },
+  "allowed_build_extensions": [
+    ".py",
+    ".json",
+    ".jsonl",
+    ".md",
+    ".txt",
+    ".csv"
+  ]
+}
