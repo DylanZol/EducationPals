@@ -9,7 +9,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LIMIT_BYTES = 10 * 1024 * 1024
-EXCLUDED_PARTS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "dist"}
+EXCLUDED_PARTS = {
+    ".git",
+    ".venv",
+    ".vs",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    "dist",
+}
 EXCLUDED_NAMES = {".env", ".DS_Store"}
 
 
