@@ -1,0 +1,2 @@
+PASS: validated 8 judgments for 8 source cases
+Artifact: judgments.jsonl is ready for Lesson 3.

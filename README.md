@@ -7,10 +7,10 @@ are produced by the agent pipeline in `agent/` rather than written by hand.
 
 ## Setup status
 
-The repository scaffold and orchestration are ready. `course/`, `build/`, and
-`output/` intentionally contain setup markers until the first live generation
-run is reviewed. After that run, commit the generated files and `agent/cache/`
-so reviewers can replay the exact responses without an API key.
+The submission is complete and runs offline. `course/` contains the generated
+lessons, `build/` contains the compounding learner artifacts, and `output/`
+contains the captured expected checks. The generation setup, prompts, schemas,
+validators, and optional live-generation provider remain in `agent/` for audit.
 
 ## Why this topic and shape
 
@@ -47,8 +47,13 @@ python -m pip install -r requirements.txt
 python -m agent verify
 ```
 
-`verify` is offline and checks the repository contract, config, prompts, and any
-generated artifacts already present.
+`verify` is offline and checks the repository contract, configuration, and
+generation setup. Then replay the learner's capstone without an API key:
+
+```bash
+python build/lesson_02_judge-contract/judge.py
+python build/lesson_03_calibrate-grader/grader.py
+```
 
 ## Generate the course
 
@@ -61,12 +66,6 @@ python -m agent generate
 The live run uses the OpenAI Responses API with Pydantic structured outputs,
 stores sanitized response envelopes in `agent/cache/`, and writes the rendered
 submission to `course/`, `build/`, and `output/`. No API key is written to disk.
-
-To replay the cached model results without a network call:
-
-```bash
-python -m agent generate --offline
-```
 
 To inspect the generation plan without touching course/build outputs:
 
@@ -109,8 +108,8 @@ educationpals-course-takehome/
 - Every build step includes a command and a visible expected check.
 - The final build prints a confusion matrix, precision, and recall.
 - Generated file paths are confined to their assigned lesson folder.
-- Live responses are stored with `store=False`; only sanitized parsed output and
-  token usage are cached locally.
+- The submitted learner build replays fixtures and cached structured judgments
+  without a network call or paid API key.
 
 The API integration follows the official OpenAI guidance for the Responses API
 and [structured model outputs](https://developers.openai.com/api/docs/guides/structured-outputs).

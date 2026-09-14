@@ -1,0 +1,2 @@
+PASS: 8 valid cases (4 expected pass, 4 expected fail)
+Artifact: cases.jsonl is ready for Lesson 2.

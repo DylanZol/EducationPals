@@ -1,0 +1,21 @@
+{
+  "generator": "GitHub Copilot (GPT-5.6 Terra)",
+  "generation_method": "staged prompt orchestration in agent/",
+  "mode": "committed AI-generated submission",
+  "topic": "Evals and LLM-as-Judge",
+  "managed_files": [
+    "course/00-course-plan.md",
+    "course/01-labeled-fixtures.md",
+    "course/02-judge-contract.md",
+    "course/03-calibrate-grader.md",
+    "build/lesson_01_labeled-fixtures/cases.jsonl",
+    "build/lesson_01_labeled-fixtures/baseline.py",
+    "build/lesson_02_judge-contract/judge.py",
+    "build/lesson_03_calibrate-grader/grader.py"
+  ],
+  "offline_replay": {
+    "fixture": "build/lesson_01_labeled-fixtures/cases.jsonl",
+    "judge_cache": "build/lesson_02_judge-contract/cached_judgments.jsonl",
+    "capstone": "python build/lesson_03_calibrate-grader/grader.py"
+  }
+}

@@ -1,0 +1,7 @@
+Confusion matrix (positive = judge approves answer)
+TP=3  FP=1  FN=1  TN=3
+Precision: 0.750
+Recall:    0.750
+False positives: C06
+False negatives: C03
+PASS: accounted for 8 joined cases

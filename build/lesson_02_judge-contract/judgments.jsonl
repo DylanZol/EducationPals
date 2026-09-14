@@ -1,0 +1,8 @@
+{"case_id": "C01", "predicted_pass": true, "reason": "Accurately states the window and next action."}
+{"case_id": "C02", "predicted_pass": false, "reason": "Promises an unsupported unlimited refund policy."}
+{"case_id": "C03", "predicted_pass": false, "reason": "Does not mention an order number."}
+{"case_id": "C04", "predicted_pass": false, "reason": "Gives no policy information or usable action."}
+{"case_id": "C05", "predicted_pass": true, "reason": "Accurately applies the seven-day policy."}
+{"case_id": "C06", "predicted_pass": true, "reason": "Offers an apparently helpful exception."}
+{"case_id": "C07", "predicted_pass": true, "reason": "Provides the requested process and policy."}
+{"case_id": "C08", "predicted_pass": false, "reason": "Incorrectly denies every possible refund."}

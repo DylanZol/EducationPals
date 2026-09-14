@@ -239,9 +239,22 @@ def verify() -> None:
 
     cache_files = sorted((AGENT_ROOT / "cache").glob("*.json"))
     generated_lessons = sorted((ROOT / "course").glob("[0-9][0-9]-*.md"))
-    if generated_lessons and not cache_files:
-        failures.append("Generated lessons exist but agent/cache has no replay files.")
-    if generated_lessons and not (ROOT / "output" / "generation-manifest.json").exists():
+    manifest_path = ROOT / "output" / "generation-manifest.json"
+    committed_submission = False
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            committed_submission = (
+                manifest.get("mode") == "committed AI-generated submission"
+                and manifest.get("generation_method") == "staged prompt orchestration in agent/"
+            )
+        except json.JSONDecodeError:
+            failures.append("output/generation-manifest.json is not valid JSON.")
+    if generated_lessons and not cache_files and not committed_submission:
+        failures.append(
+            "Generated lessons need agent/cache replay files or a committed generation manifest."
+        )
+    if generated_lessons and not manifest_path.exists():
         failures.append("Generated lessons exist without output/generation-manifest.json.")
 
     status = [

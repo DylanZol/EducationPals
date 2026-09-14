@@ -1,7 +1,7 @@
 EducationPals repository verification
-Python: 3.12.14
+Python: 3.12.10
 Topic: Evals and LLM-as-Judge
 Configured lessons: 3
 Cached model responses: 0
-Generated lessons: 0
+Generated lessons: 4
 Result: PASS
