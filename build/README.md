@@ -1,6 +1,9 @@
-# Generated build-alongs
+# Offline build-alongs
 
-The learner's incremental artifacts are written here, one folder per lesson.
-Each lesson folder includes its own instructions and runnable files.
+Each lesson folder contains four incremental commands that can be run from the
+repository root without credentials or a network connection. The handoff chain
+is `cases.jsonl` (Lesson 1) → `judgments.jsonl` (Lesson 2) → the calibration
+report (Lesson 3).
 
-This marker is removed automatically after a successful generation run.
+Run `python scripts/replay_submission.py` to execute every learner command and
+compare its captured output with the checked-in fixtures.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -31,14 +32,44 @@ def load_judgments(source: Path, case_ids: set[str]) -> dict[str, dict[str, obje
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    actions = parser.add_mutually_exclusive_group()
+    actions.add_argument("--inspect-source", action="store_true")
+    actions.add_argument("--validate-cache", action="store_true")
+    actions.add_argument("--write-judgments", action="store_true")
+    actions.add_argument("--validate-output", action="store_true")
+    args = parser.parse_args()
+
     lesson_root = Path(__file__).resolve().parent
     cases = load_cases(lesson_root.parent / "lesson_01_labeled-fixtures" / "cases.jsonl")
-    judgments = load_judgments(lesson_root / "cached_judgments.jsonl", {str(case["id"]) for case in cases})
+    case_ids = {str(case["id"]) for case in cases}
+    cached_judgments = lesson_root / "cached_judgments.jsonl"
     destination = lesson_root / "judgments.jsonl"
-    destination.write_text(
-        "".join(json.dumps(judgments[str(case["id"])], sort_keys=True) + "\n" for case in cases),
-        encoding="utf-8",
-    )
+
+    if args.inspect_source:
+        print(f"PASS: source cases.jsonl provides {len(case_ids)} case IDs")
+        return
+
+    if args.validate_cache:
+        judgments = load_judgments(cached_judgments, case_ids)
+        print(f"PASS: cached judgments cover {len(judgments)} source cases")
+        return
+
+    if args.write_judgments:
+        judgments = load_judgments(cached_judgments, case_ids)
+        destination.write_text(
+            "".join(json.dumps(judgments[str(case["id"])], sort_keys=True) + "\n" for case in cases),
+            encoding="utf-8",
+        )
+        print(f"PASS: wrote {len(judgments)} normalized judgments to judgments.jsonl")
+        return
+
+    judgments = load_judgments(destination if args.validate_output else cached_judgments, case_ids)
+    if not args.validate_output:
+        destination.write_text(
+            "".join(json.dumps(judgments[str(case["id"])], sort_keys=True) + "\n" for case in cases),
+            encoding="utf-8",
+        )
     print(f"PASS: validated {len(judgments)} judgments for {len(cases)} source cases")
     print("Artifact: judgments.jsonl is ready for Lesson 3.")
 

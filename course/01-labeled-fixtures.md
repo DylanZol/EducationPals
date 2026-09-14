@@ -2,7 +2,10 @@
 
 Checkpoints: CP1
 
-## An eval case is a decision, not a prompt collection
+**Pacing:** Four 3-minute prose sections (12 minutes), then an 18-minute
+build-along (30 minutes total).
+
+## Section 1 — 3 minutes: An eval case is a decision, not a prompt collection
 
 An evaluation set is useful when it lets you make the same product decision on
 two different versions of a system. That requirement sounds modest, but it
@@ -40,7 +43,7 @@ correct policy but misses a required condition. Later, sample production data
 and stratify it by traffic and failure mode. First, create a fixture whose
 meaning another engineer can audit.
 
-## Labels need a policy before they need a spreadsheet
+## Section 2 — 3 minutes: Labels need a policy before they need a spreadsheet
 
 Human labels are the reference point for the calibration in Lesson 3, so an
 ambiguous label is not harmless setup work. A label answers a specific question
@@ -74,7 +77,7 @@ bad mechanics otherwise become confusing model failures in the next lesson.
 Once it passes, commit the fixture. Treat later changes as versioned data, not
 as invisible edits to the ruler used to measure model quality.
 
-## Baselines make later disagreement informative
+## Section 3 — 3 minutes: Baselines make later disagreement informative
 
 Before invoking an LLM judge, run a deliberately simple baseline over the
 fixture. This course's baseline does not try to be clever: it only verifies
@@ -106,8 +109,48 @@ an offline replay of judge verdicts, and preserve the source IDs. Nothing is
 being scored yet. That separation is intentional: first build a ruler, then
 check whether the judge reads it consistently.
 
+## Section 4 — 3 minutes: Coverage makes a small fixture useful
+
+Fixture size is a budget, not a proxy for rigor. A small set earns its place
+when every case probes a decision that could otherwise hide behind an average.
+Start by naming the ways the assistant can fail: inventing a policy, omitting a
+condition, declining a request it should answer, or following the policy with
+an unusable next step. Then choose one or two cases for each failure mode. That
+method gives the eight examples a purpose beyond variety. It also makes the
+next addition obvious when a production incident exposes a new mistake.
+
+Coverage is different from random sampling. A random sample can estimate the
+frequency of common behavior, but it may contain no examples of a rare,
+high-cost policy claim. A diagnostic fixture deliberately overrepresents
+boundary cases because its job is to reveal whether a change handles them. For
+example, include both an answer that says refunds are allowed within seven days
+and an accurate paraphrase that says customers have one week. The pair tests
+whether a later judge measures policy fidelity or merely rewards a copied
+phrase. Include an invented thirty-day exception as a separate failure, because
+its confidence is part of the risk.
+
+Do not turn coverage into a hidden scoring trick. If four cases all express the
+same invented exception with minor punctuation changes, a judge that learns
+that phrase receives too much credit. Prefer cases that vary the wording,
+request shape, and reason for the decision while preserving the documented
+rule. Give each case a stable ID that hints at its role, such as
+`valid-paraphrase` or `invented-exception`; the ID is an audit handle, not
+evidence for the model. Keep the rubric sufficient for a reviewer to explain
+the label without consulting unwritten assumptions.
+
+After the first run, use disagreements to prioritize coverage rather than to
+inflate the score. A false positive involving a policy exception suggests a new
+variant for a future fixture version; it does not justify relabeling the
+existing case. Preserve the original set as the comparison ruler, and add
+cases with a recorded reason. This course's fixture is intentionally a
+diagnostic slice, not a production estimate. Its disciplined coverage gives
+Lesson 2 a meaningful, inspectable input while keeping the build short enough
+to complete in one session.
+
 ## Build-along
 
-Create and validate the frozen fixture in
-`build/lesson_01_labeled-fixtures/BUILD.md`. The artifact for the next lesson is
-`build/lesson_01_labeled-fixtures/cases.jsonl`.
+This lesson creates the source artifact for the course. The fixture is checked in so you can focus on inspecting the contract before changing data.
+
+Continue in `build/lesson_01_labeled-fixtures/BUILD.md`.
+
+Artifact contract for the next lesson: `build/lesson_01_labeled-fixtures/cases.jsonl`

@@ -2,7 +2,10 @@
 
 Checkpoints: CP2
 
-## A judge has two outputs with different jobs
+**Pacing:** Four 3-minute prose sections (12 minutes), then an 18-minute
+build-along (30 minutes total).
+
+## Section 1 — 3 minutes: A judge has two outputs with different jobs
 
 An LLM-as-judge is a model call that evaluates a candidate output against a
 rubric. The useful output is not a paragraph saying "looks good." It is a
@@ -34,7 +37,7 @@ prediction. Duplicating ground truth into the judge file creates two sources of
 truth that can silently diverge. Lesson 3 will join the two artifacts by ID and
 fail fast if either side has missing or extra cases.
 
-## Validation is a product boundary, not an afterthought
+## Section 2 — 3 minutes: Validation is a product boundary, not an afterthought
 
 JSON parsing is not validation. A line can be valid JSON and still be unusable:
 an array instead of an object, a string where a boolean is required, an unknown
@@ -66,7 +69,7 @@ case ID. A broken evaluation is better than a believable metric computed from
 unknown inputs. Once the output is valid, write the normalized lines in stable
 source-fixture order. Stable order makes a diff tell you what changed.
 
-## A rubric controls the judge's measurement target
+## Section 3 — 3 minutes: A rubric controls the judge's measurement target
 
 The judge is not an oracle; it is a classifier conditioned on its rubric. If
 the rubric says "be helpful," a judge may reward invented exceptions because
@@ -95,11 +98,53 @@ The output of this lesson is not a quality claim. It is a validated set of
 judge predictions that Lesson 3 can compare with the human reference. Because
 the replay consumes Lesson 1's artifact by path and preserves its IDs, the
 capstone can prove exactly which source cases produced each matrix cell.
-Retain this cache as the reproducible baseline before changing a prompt or
-switching the judge model.
+Retain this cache as the reproducible baseline before changing a prompt,
+switching the judge model, or publishing a durable comparison.
+
+## Section 4 — 3 minutes: Provenance makes a judge run comparable
+
+A valid judgment file is not yet a comparable experiment. The same JSON shape
+can describe verdicts produced by a different rubric, a changed prompt, or a
+new model snapshot. If those inputs are not named, a later precision change
+cannot be attributed. The file may still be useful for debugging a single
+case, but it cannot support the question the course is teaching: did this judge
+become better or worse against the same human standard?
+
+Treat the cached replay as a measurement record. At minimum, associate it with
+the fixture version, rubric or prompt version, model identifier, and decoding
+settings such as temperature. A production record should also include when the
+run happened and a content hash of the inputs. The cache in this build stays
+small on purpose: `judgments.jsonl` holds the contract that the grader consumes,
+while the checked build material documents the fixed replay. That separation
+prevents metadata from becoming a second copy of the human labels or from
+changing the simple join Lesson 3 must demonstrate.
+
+Stable ordering helps make the record reviewable, but it is not identity.
+Write judgments in the source fixture's order so a line-by-line diff is easy
+to read; still use `case_id` as the only key when validating or grading. A
+reordered fixture then produces a harmless presentation change instead of a
+silent relabeling. Conversely, a changed case ID or a missing ID must fail even
+when the number of lines looks right. The distinction lets people review a
+meaningful model change without mistaking formatting for evidence.
+
+Version changes need deliberate comparisons. When a prompt is revised to
+reject invented exceptions, save the old cache and create a new cache with the
+new prompt version. Grade each against the same fixture before deciding whether
+the revision is an improvement. If the fixture also changes, report that as a
+new benchmark rather than comparing the two scores directly. This discipline
+does not require a large platform: filenames, a manifest, and immutable source
+artifacts are enough for the small exercise.
+
+The next lesson therefore receives a verified prediction artifact with a
+clear lineage. Its numbers can be traced back to particular source cases and a
+specific judge configuration, rather than to a vague statement that “the
+model” was tested. Reproducibility is what turns structured output from a
+convenient integration format into evidence suitable for calibration.
 
 ## Build-along
 
-Replay and validate the cached judgments in
-`build/lesson_02_judge-contract/BUILD.md`. The artifact for the final lesson is
-`build/lesson_02_judge-contract/judgments.jsonl`.
+The cached JSONL represents structured output captured from a judge. A live implementation would validate a provider response at this same boundary and cache the normalized records for replay.
+
+Continue in `build/lesson_02_judge-contract/BUILD.md`.
+
+Artifact contract for the next lesson: `build/lesson_02_judge-contract/judgments.jsonl`

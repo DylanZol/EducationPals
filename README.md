@@ -9,8 +9,9 @@ are produced by the agent pipeline in `agent/` rather than written by hand.
 
 The submission is complete and runs offline. `course/` contains the generated
 lessons, `build/` contains the compounding learner artifacts, and `output/`
-contains the captured expected checks. The generation setup, prompts, schemas,
-validators, and optional live-generation provider remain in `agent/` for audit.
+contains captured learner run transcripts. The generation setup, prompts,
+schemas, validators, and complete sanitized response cache remain in `agent/`
+for audit and exact replay.
 
 ## Why this topic and shape
 
@@ -32,10 +33,13 @@ course backwards from the capstone.
 PowerShell:
 
 ```powershell
-python -m venv .venv
+py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+python -m agent generate --offline
+python scripts\replay_submission.py
 python -m agent verify
+python -m unittest discover -v
 ```
 
 macOS/Linux:
@@ -44,16 +48,17 @@ macOS/Linux:
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+python -m agent generate --offline
+python scripts/replay_submission.py
 python -m agent verify
+python -m unittest discover -v
 ```
 
-`verify` is offline and checks the repository contract, configuration, and
-generation setup. Then replay the learner's capstone without an API key:
-
-```bash
-python build/lesson_02_judge-contract/judge.py
-python build/lesson_03_calibrate-grader/grader.py
-```
+The offline generation command validates prompt hashes, output hashes, schemas,
+and every cached generation stage before recreating the lesson and build files.
+The replay script then runs all learner commands in order, writes actual stdout
+to `output/lesson-0N-run.txt`, and fails if it differs from the committed
+expected output. Neither command requires an API key or network access.
 
 ## Generate the course
 
@@ -83,8 +88,9 @@ python scripts/package_submission.py lastname-firstname
 ```
 
 The packager writes `dist/lastname-firstname.zip`, excludes local environments,
-Git metadata, caches, secrets, and existing archives, then fails if the result is
-10 MB or larger.
+Git metadata, secrets, and existing archives, then fails if the result is 10 MB
+or larger. The sanitized `agent/cache/` records are intentionally included so
+the reviewer can reproduce the generated artifacts offline.
 
 ## Required submission layout
 
@@ -108,6 +114,8 @@ educationpals-course-takehome/
 - Every build step includes a command and a visible expected check.
 - The final build prints a confusion matrix, precision, and recall.
 - Generated file paths are confined to their assigned lesson folder.
+- Offline generation validates and replays every staged model response without a
+  network call or paid API key.
 - The submitted learner build replays fixtures and cached structured judgments
   without a network call or paid API key.
 

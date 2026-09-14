@@ -1,21 +1,182 @@
 {
-  "generator": "GitHub Copilot (GPT-5.6 Terra)",
-  "generation_method": "staged prompt orchestration in agent/",
-  "mode": "committed AI-generated submission",
-  "topic": "Evals and LLM-as-Judge",
-  "managed_files": [
-    "course/00-course-plan.md",
-    "course/01-labeled-fixtures.md",
-    "course/02-judge-contract.md",
-    "course/03-calibrate-grader.md",
-    "build/lesson_01_labeled-fixtures/cases.jsonl",
-    "build/lesson_01_labeled-fixtures/baseline.py",
-    "build/lesson_02_judge-contract/judge.py",
-    "build/lesson_03_calibrate-grader/grader.py"
+  "schema_version": 2,
+  "generator": "agent.orchestrator",
+  "model": "gpt-5.6-terra",
+  "mode": "offline-cache-replay",
+  "offline_replay": true,
+  "provider_records": [
+    {
+      "cache_schema_version": 2,
+      "cache_key": "00-breaking-points",
+      "created_at": "2026-09-14T20:01:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "7c544c7e74fb240f2d04402bfee50465545030a8cb3637816a07bfa59727f7c4",
+      "output_sha256": "47a217e7e783912d096505ec7cebade183f2af74d8c017ba301dd49114bcd1b5",
+      "schema": "agent.schemas.BreakingPoints",
+      "response_id": "offline-fixture-00-breaking-points",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "10-course-plan",
+      "created_at": "2026-09-14T20:02:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "290934fafa1a90bc9b1e44ff928418c840eef67f14b6f77b0a8c04af9026ef61",
+      "output_sha256": "8ee2e321414c264669c54f729d6cef21af579e335baae4724943ea85aba1c33b",
+      "schema": "agent.schemas.CoursePlan",
+      "response_id": "offline-fixture-10-course-plan",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "20-lesson-01-r0",
+      "created_at": "2026-09-14T20:03:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "2576532e001e6bf8a63628d37f000fa7238d9a26850e85c7ad9537d8d7ce42ef",
+      "output_sha256": "c2a404f81b3598d220b5d4ed41171dacfffecea19ae5d565134f55a6c264e752",
+      "schema": "agent.schemas.LessonArtifact",
+      "response_id": "offline-fixture-20-lesson-01-r0",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "30-review-01-r0",
+      "created_at": "2026-09-14T20:04:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "668b00a71200e98dcb90a1913d259d207422cdede9117f6d390b0ac8e556b658",
+      "output_sha256": "f78edc5704c087b4a471f4184051fd2abce9b121fb11c5d716b18a14dda6ad29",
+      "schema": "agent.schemas.ReviewResult",
+      "response_id": "offline-fixture-30-review-01-r0",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "20-lesson-02-r0",
+      "created_at": "2026-09-14T20:05:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "8b1773a3fc354afed51b87b1506901c1be0289b939102abd506b2c9c1d5e9bc6",
+      "output_sha256": "8c434ea218a92c35662e0926050c0a52368af45daa871dfda72f2a4edc66473e",
+      "schema": "agent.schemas.LessonArtifact",
+      "response_id": "offline-fixture-20-lesson-02-r0",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "30-review-02-r0",
+      "created_at": "2026-09-14T20:06:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "13c8dbd2d6100d2a8da53e31bb3a84999c26635b0c34f0dc1d6664974a8b9ca8",
+      "output_sha256": "f78edc5704c087b4a471f4184051fd2abce9b121fb11c5d716b18a14dda6ad29",
+      "schema": "agent.schemas.ReviewResult",
+      "response_id": "offline-fixture-30-review-02-r0",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "20-lesson-03-r0",
+      "created_at": "2026-09-14T20:07:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "594580daa71221856daa50d2f4b7d8d53006992c4247d17d83637aff6a027abe",
+      "output_sha256": "4ae53203ea2f7ca455e2f310ee37865f45bf698b77b1c42f29a558a202f929d1",
+      "schema": "agent.schemas.LessonArtifact",
+      "response_id": "offline-fixture-20-lesson-03-r0",
+      "usage": null
+    },
+    {
+      "cache_schema_version": 2,
+      "cache_key": "30-review-03-r0",
+      "created_at": "2026-09-14T20:08:00+00:00",
+      "model": "gpt-5.6-terra",
+      "prompt_sha256": "5a6552ffbfd2d5f843dfb85ec063f40b7158550db56e3e98a0cbba9b6ca94ec5",
+      "output_sha256": "f78edc5704c087b4a471f4184051fd2abce9b121fb11c5d716b18a14dda6ad29",
+      "schema": "agent.schemas.ReviewResult",
+      "response_id": "offline-fixture-30-review-03-r0",
+      "usage": null
+    }
   ],
-  "offline_replay": {
-    "fixture": "build/lesson_01_labeled-fixtures/cases.jsonl",
-    "judge_cache": "build/lesson_02_judge-contract/cached_judgments.jsonl",
-    "capstone": "python build/lesson_03_calibrate-grader/grader.py"
-  }
+  "managed_files": [
+    {
+      "path": "build/lesson_01_labeled-fixtures/BUILD.md",
+      "sha256": "04b017d58a80bab59a0e7fdaa606627e8d3ed6f8561acf5ff30a71e92b5cb659"
+    },
+    {
+      "path": "build/lesson_01_labeled-fixtures/baseline.py",
+      "sha256": "d1ad4227bff47a5148287bd8fc2791ded4a4febf4e6ee55d673dc8ac24f389a2"
+    },
+    {
+      "path": "build/lesson_01_labeled-fixtures/cases.jsonl",
+      "sha256": "7f6f00c3b9e34b4f46e79e14ba745ddf7482c1ea240ef4ecc45bb235a8334ff2"
+    },
+    {
+      "path": "build/lesson_02_judge-contract/BUILD.md",
+      "sha256": "9a9cecc7457ec9059f278a9e342a3f9d563ab8dee2fc0c9e882f6e7bd20614eb"
+    },
+    {
+      "path": "build/lesson_02_judge-contract/cached_judgments.jsonl",
+      "sha256": "b44836ec25d61d4ad271398b9a4f6c981ea40cb22ab81784cfa26834d440f96d"
+    },
+    {
+      "path": "build/lesson_02_judge-contract/judge.py",
+      "sha256": "fc4bf95f4ea3dbc8ba2967f827abe2bf0ba687c7453079a2feecf258d58ce41a"
+    },
+    {
+      "path": "build/lesson_03_calibrate-grader/BUILD.md",
+      "sha256": "8c5e53f3882a9e2a664502fe22535186dc31ed7aef167c8d780dc2fe7df0aef9"
+    },
+    {
+      "path": "build/lesson_03_calibrate-grader/grader.py",
+      "sha256": "1efe7a4a796d80649d8b6c80d8e31f5546a947b890cabf250a70c367be61f4d9"
+    },
+    {
+      "path": "course/00-course-plan.md",
+      "sha256": "dadd3b85082e8fd5ded778c7eb8de6435570b62489a906deea87d3acc6823267"
+    },
+    {
+      "path": "course/01-labeled-fixtures.md",
+      "sha256": "d792a470effe802b16c91cff938313d0f041f6d70b0d5ec75ed976840b322b69"
+    },
+    {
+      "path": "course/02-judge-contract.md",
+      "sha256": "b5d665d5b274a9b8398238bf2111446b21e94b590a845c41f4bfe26b34bdaab7"
+    },
+    {
+      "path": "course/03-calibrate-grader.md",
+      "sha256": "8f4bd8eaf9c00b0094ff629df905e37cd8fd83650b08c00465867b2f63031845"
+    },
+    {
+      "path": "output/lesson-01-expected.txt",
+      "sha256": "905564872c0208e5691e87d9018c6e585ad9fb11113a4129c47b4010d76ee96d"
+    },
+    {
+      "path": "output/lesson-02-expected.txt",
+      "sha256": "87b4ea597e0e1ac328bbf2cf1d1e83172aa8d8059c0284d7a7b39c9aea8e5dc8"
+    },
+    {
+      "path": "output/lesson-03-expected.txt",
+      "sha256": "2f30a4e6700ec548e4c405a16e5cc3f0dc5275182b3bf482ce44d95b18fa79e3"
+    }
+  ],
+  "reviews": [
+    {
+      "passed": true,
+      "blocking_issues": [],
+      "non_blocking_notes": [
+        "Cached fixture reviewed for deterministic replay."
+      ]
+    },
+    {
+      "passed": true,
+      "blocking_issues": [],
+      "non_blocking_notes": [
+        "Cached fixture reviewed for deterministic replay."
+      ]
+    },
+    {
+      "passed": true,
+      "blocking_issues": [],
+      "non_blocking_notes": [
+        "Cached fixture reviewed for deterministic replay."
+      ]
+    }
+  ]
 }

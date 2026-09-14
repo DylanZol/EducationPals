@@ -11,9 +11,14 @@
     "build_minutes_max": 20
   },
   "generation": {
-    "model": "gpt-5.6-sol",
+    "model": "gpt-5.6-terra",
     "store_api_responses": false,
     "max_revision_rounds": 1
+  },
+  "cache": {
+    "schema_version": 2,
+    "required_for_offline_replay": true,
+    "store_prompts": false
   },
   "allowed_build_extensions": [
     ".py",

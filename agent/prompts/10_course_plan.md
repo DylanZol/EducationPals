@@ -18,4 +18,5 @@ the prior lesson's artifact (except lesson 1) and produce the next. Every sectio
 must teach one prerequisite idea. Use current industry vocabulary.
 
 The final lesson's visible checks must include a confusion matrix, precision,
-and recall. Return only the requested structured object.
+and recall. Include a concise learner-facing summary for each lesson that
+explains its artifact handoff. Return only the requested structured object.

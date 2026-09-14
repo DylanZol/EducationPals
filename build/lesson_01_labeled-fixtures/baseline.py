@@ -1,7 +1,8 @@
-"""Validate the seed evaluation fixture and report its label balance."""
+"""Build and validate the seed evaluation fixture used by later lessons."""
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -29,10 +30,43 @@ def load_cases(path: Path) -> list[dict[str, object]]:
     return cases
 
 
-def main() -> None:
-    cases = load_cases(Path(__file__).with_name("cases.jsonl"))
+def report_balance(cases: list[dict[str, object]], label: str) -> None:
     passed = sum(case["expected_pass"] for case in cases)
-    print(f"PASS: {len(cases)} valid cases ({passed} expected pass, {len(cases) - passed} expected fail)")
+    print(f"PASS: {len(cases)} valid {label} ({passed} expected pass, {len(cases) - passed} expected fail)")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    actions = parser.add_mutually_exclusive_group()
+    actions.add_argument("--inspect-starter", action="store_true")
+    actions.add_argument("--validate-starter", action="store_true")
+    actions.add_argument("--write-cases", action="store_true")
+    args = parser.parse_args()
+
+    lesson_root = Path(__file__).resolve().parent
+    starter = lesson_root / "cases.starter.jsonl"
+    destination = lesson_root / "cases.jsonl"
+
+    if args.inspect_starter:
+        first_case = load_cases(starter)[0]
+        print(f"PASS: starter contract has {len(REQUIRED)} required fields")
+        print(f"First case: {first_case['id']} (expected_pass={first_case['expected_pass']})")
+        return
+
+    if args.validate_starter:
+        report_balance(load_cases(starter), "starter cases")
+        return
+
+    if args.write_cases:
+        cases = load_cases(starter)
+        destination.write_text(
+            "".join(json.dumps(case, separators=(",", ":")) + "\n" for case in cases),
+            encoding="utf-8",
+        )
+        print(f"PASS: wrote {len(cases)} normalized cases to cases.jsonl")
+        return
+
+    report_balance(load_cases(destination), "cases")
     print("Artifact: cases.jsonl is ready for Lesson 2.")
 
 

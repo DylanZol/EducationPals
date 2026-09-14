@@ -1,8 +1,3 @@
-PASS: joined 8 cases with 8 judgments
-Confusion matrix (positive = judge approves answer)
-TP=3  FP=1  FN=1  TN=3
-Precision: 0.750
-Recall:    0.750
 Confusion matrix (positive = judge approves answer)
 TP=3  FP=1  FN=1  TN=3
 Precision: 0.750

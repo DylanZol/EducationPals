@@ -1,0 +1,33 @@
+{
+  "cache_key": "00-breaking-points",
+  "cache_schema_version": 2,
+  "created_at": "2026-09-14T20:01:00+00:00",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "breaking_points": [
+      {
+        "consequence": "Regressions hide in failure modes that were not written down, and runs cannot be compared fairly.",
+        "id": "BP1",
+        "misconception": "A few hand-picked prompts can represent production quality.",
+        "symptom": "A plausible example is mistaken for an evaluation set."
+      },
+      {
+        "consequence": "Missing fields and changed label meanings silently break downstream metrics.",
+        "id": "BP2",
+        "misconception": "A confident explanation automatically provides a usable machine-readable verdict.",
+        "symptom": "Judge output is treated as self-validating despite an unstable contract."
+      },
+      {
+        "consequence": "A judge can approve bad answers or reject useful answers while appearing acceptable.",
+        "id": "BP3",
+        "misconception": "A single accuracy number explains whether a judge is safe for production.",
+        "symptom": "Agreement is reported without identifying the direction of mistakes."
+      }
+    ]
+  },
+  "output_sha256": "47a217e7e783912d096505ec7cebade183f2af74d8c017ba301dd49114bcd1b5",
+  "prompt_sha256": "7c544c7e74fb240f2d04402bfee50465545030a8cb3637816a07bfa59727f7c4",
+  "response_id": "offline-fixture-00-breaking-points",
+  "schema": "agent.schemas.BreakingPoints",
+  "usage": null
+}

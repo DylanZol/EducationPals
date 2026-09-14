@@ -1,0 +1,172 @@
+{
+  "cache_key": "10-course-plan",
+  "cache_schema_version": 2,
+  "created_at": "2026-09-14T20:02:00+00:00",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "checkpoints": [
+      {
+        "ability": "Define a compact evaluation case with a human gold label, a rubric, and a stable ID.",
+        "breaking_point_ids": [
+          "BP1"
+        ],
+        "evidence": "A validator rejects malformed or duplicate cases.",
+        "id": "CP1"
+      },
+      {
+        "ability": "Separate a judge schema-validated verdict from its explanation and diagnostic context.",
+        "breaking_point_ids": [
+          "BP2"
+        ],
+        "evidence": "A replay command checks one verdict per source case.",
+        "id": "CP2"
+      },
+      {
+        "ability": "Turn gold labels and judge verdicts into TP, FP, FN, TN, precision, and recall.",
+        "breaking_point_ids": [
+          "BP3"
+        ],
+        "evidence": "The capstone prints all six values deterministically.",
+        "id": "CP3"
+      }
+    ],
+    "lessons": [
+      {
+        "build": {
+          "artifact": "A reproducible evaluation artifact",
+          "consumes": [],
+          "minutes": 15,
+          "produces": "build/lesson_01_labeled-fixtures/cases.jsonl",
+          "title": "Make a small eval set comparable build",
+          "visible_checks": [
+            "Eight valid labeled cases"
+          ]
+        },
+        "checkpoint_ids": [
+          "CP1"
+        ],
+        "number": 1,
+        "sections": [
+          {
+            "idea": "Teach the prerequisite concept needed for the reproducible build artifact.",
+            "minutes": 3,
+            "title": "Core concept"
+          },
+          {
+            "idea": "Show the contract that keeps the artifact reproducible and auditable.",
+            "minutes": 3,
+            "title": "Practical boundary"
+          },
+          {
+            "idea": "Demonstrate a visible deterministic validation check for the learner.",
+            "minutes": 3,
+            "title": "Verification"
+          },
+          {
+            "idea": "Apply the artifact contract to a realistic engineering decision.",
+            "minutes": 3,
+            "title": "Decision boundary"
+          }
+        ],
+        "slug": "labeled-fixtures",
+        "summary": "Checkpoint: CP1. The build creates `cases.jsonl`, a labeled fixture that later lessons treat as the source of truth.",
+        "title": "Make a small eval set comparable"
+      },
+      {
+        "build": {
+          "artifact": "A reproducible evaluation artifact",
+          "consumes": [
+            "build/lesson_01_labeled-fixtures/cases.jsonl"
+          ],
+          "minutes": 15,
+          "produces": "build/lesson_02_judge-contract/judgments.jsonl",
+          "title": "Replay an LLM judge with a contract build",
+          "visible_checks": [
+            "Eight validated judgments"
+          ]
+        },
+        "checkpoint_ids": [
+          "CP2"
+        ],
+        "number": 2,
+        "sections": [
+          {
+            "idea": "Teach the prerequisite concept needed for the reproducible build artifact.",
+            "minutes": 3,
+            "title": "Core concept"
+          },
+          {
+            "idea": "Show the contract that keeps the artifact reproducible and auditable.",
+            "minutes": 3,
+            "title": "Practical boundary"
+          },
+          {
+            "idea": "Demonstrate a visible deterministic validation check for the learner.",
+            "minutes": 3,
+            "title": "Verification"
+          },
+          {
+            "idea": "Apply the artifact contract to a realistic engineering decision.",
+            "minutes": 3,
+            "title": "Decision boundary"
+          }
+        ],
+        "slug": "judge-contract",
+        "summary": "Checkpoint: CP2. The build consumes the Lesson 1 fixture and emits one validated cached judgment per case. It models the boundary where a live structured-output call would be cached for offline review.",
+        "title": "Replay an LLM judge with a contract"
+      },
+      {
+        "build": {
+          "artifact": "A reproducible evaluation artifact",
+          "consumes": [
+            "build/lesson_02_judge-contract/judgments.jsonl"
+          ],
+          "minutes": 15,
+          "produces": "output/lesson-03-expected.txt",
+          "title": "Calibrate the judge instead of trusting it build",
+          "visible_checks": [
+            "confusion matrix",
+            "precision",
+            "recall"
+          ]
+        },
+        "checkpoint_ids": [
+          "CP3"
+        ],
+        "number": 3,
+        "sections": [
+          {
+            "idea": "Teach the prerequisite concept needed for the reproducible build artifact.",
+            "minutes": 3,
+            "title": "Core concept"
+          },
+          {
+            "idea": "Show the contract that keeps the artifact reproducible and auditable.",
+            "minutes": 3,
+            "title": "Practical boundary"
+          },
+          {
+            "idea": "Demonstrate a visible deterministic validation check for the learner.",
+            "minutes": 3,
+            "title": "Verification"
+          },
+          {
+            "idea": "Apply the artifact contract to a realistic engineering decision.",
+            "minutes": 3,
+            "title": "Decision boundary"
+          }
+        ],
+        "slug": "calibrate-grader",
+        "summary": "Checkpoint: CP3. The build consumes the prior fixture and judgment artifact, computes the confusion matrix, and prints precision and recall.",
+        "title": "Calibrate the judge instead of trusting it"
+      }
+    ],
+    "promise": "This course is for an engineer who has already shipped an AI feature and needs an answer to a more useful question than \"did the last demo look good?\" In about 90 minutes, you will create a small, reproducible evaluation harness and use it to measure an offline replay of an LLM judge. The capstone prints a confusion matrix, precision, and recall against human labels.",
+    "title": "Evals and LLM-as-Judge: A Grader You Can Trust"
+  },
+  "output_sha256": "8ee2e321414c264669c54f729d6cef21af579e335baae4724943ea85aba1c33b",
+  "prompt_sha256": "290934fafa1a90bc9b1e44ff928418c840eef67f14b6f77b0a8c04af9026ef61",
+  "response_id": "offline-fixture-10-course-plan",
+  "schema": "agent.schemas.CoursePlan",
+  "usage": null
+}

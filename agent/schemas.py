@@ -51,6 +51,7 @@ class LessonPlan(StrictModel):
     checkpoint_ids: list[str] = Field(min_length=1, max_length=3)
     sections: list[SectionPlan] = Field(min_length=1, max_length=5)
     build: BuildPlan
+    summary: str = Field(default="", min_length=20)
 
 
 class CoursePlan(StrictModel):

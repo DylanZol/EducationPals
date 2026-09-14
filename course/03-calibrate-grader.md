@@ -2,7 +2,10 @@
 
 Checkpoints: CP3
 
-## A confusion matrix keeps mistakes directional
+**Pacing:** Four 3-minute prose sections (12 minutes), then an 18-minute
+build-along (30 minutes total).
+
+## Section 1 — 3 minutes: A confusion matrix keeps mistakes directional
 
 The final question is not "how many times did the judge agree?" It is "which
 decisions does the judge get wrong, and what will that cost the product?" A
@@ -37,7 +40,7 @@ match, stop. A metric calculated after a partial join is not conservative; it
 is wrong. The visible accounting check turns a subtle data mismatch into an
 immediate failure.
 
-## Precision and recall name different product risks
+## Section 2 — 3 minutes: Precision and recall name different product risks
 
 Precision asks: among the answers the judge approved, how many were actually
 passing according to the human label? Its formula is `TP / (TP + FP)`. In the
@@ -66,9 +69,10 @@ The code prints `n/a` instead. The same applies when the reference set contains
 no actual passes. In a real report, class counts should sit beside every rate so
 readers can see whether a seemingly perfect score came from two examples or two
 thousand.
-Always preserve those denominators in reports, alerts, and release notes.
+Always preserve those denominators and class definitions in reports, alerts,
+and release notes.
 
-## Calibration is an iteration loop, not a score hunt
+## Section 3 — 3 minutes: Calibration is an iteration loop, not a score hunt
 
 A first confusion matrix is a diagnosis, not a release decision. Start with
 the false positives because they show where the judge's approval criterion is
@@ -101,8 +105,52 @@ evidence instead of confidence.
 That discipline makes later metric changes explainable instead of merely
 impressive-looking numbers on a release dashboard.
 
+## Section 4 — 3 minutes: A metric needs a decision rule
+
+Precision and recall become useful only when someone decides what happens at a
+given result. A dashboard that reports `0.750` without an intended action
+invites score watching rather than calibration. Start with the product
+consequence: is a predicted pass automatically shown to a customer, routed to
+a human reviewer, or used only to rank work? The consequence determines which
+error deserves a tighter limit. It also determines whether this small fixture
+is a diagnostic signal or enough evidence for a release decision.
+
+For the support-policy example, approving an invented exception is more costly
+than sending a sound answer to review. A reasonable initial rule might be:
+do not auto-approve until precision exceeds an agreed safety target on a
+representative, independently held-out set; send uncertain or failing cases to
+review in the meantime. That rule does not make 0.750 inherently bad. It makes
+the next action explicit: inspect the single false positive, improve the
+rubric or prompt, and test the revision without changing the ruler midstream.
+
+Thresholds belong to the decision process, not to the formula. This exercise's
+judge emits a boolean prediction, so the build exposes a fixed pass boundary.
+Many production judges instead produce a score or a structured severity label.
+For those systems, evaluate several candidate thresholds against the same
+held-out labels and report the resulting matrix at each one. Choose a
+threshold before looking at the final holdout whenever possible; otherwise the
+team can accidentally select the one that best fits noise. Preserve the chosen
+threshold with the prompt and model version.
+
+Counts constrain confident stories. Four approvals with one false positive
+produce 0.750 precision, but they do not prove the next four approvals will
+behave the same way. Keep the numerator and denominator next to every rate,
+and add uncertainty estimates as the dataset becomes large enough to support
+them. Until then, use the matrix as a map of known behavior. It is valuable
+because it directs investigation to concrete cases, not because it supplies a
+universal quality certificate.
+
+The capstone’s result should therefore lead to a written decision: retain the
+current offline judge as a baseline, revise the handling of the observed
+failure modes, or collect more labels before changing automation. That closes
+the loop between a classifier metric and product risk. Calibration is complete
+only when the measured trade-off changes what the team will test, ship, or
+review next.
+
 ## Build-along
 
-Run the capstone in `build/lesson_03_calibrate-grader/BUILD.md`. It consumes the
-previous two artifacts and prints the final confusion matrix, precision, and
-recall.
+The capstone consumes `cases.jsonl` from Lesson 1 and the normalized `judgments.jsonl` generated in Lesson 2. Run the Lesson 2 command first if the judgment artifact is absent.
+
+Continue in `build/lesson_03_calibrate-grader/BUILD.md`.
+
+Artifact contract for the next lesson: `output/lesson-03-expected.txt`

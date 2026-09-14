@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 import os
 import sys
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
 from .providers import CacheStore, CachedProvider, OpenAIProvider
-from .rendering import render_lesson, render_plan
+from .rendering import render_lesson, render_manifest, render_plan
 from .schemas import BreakingPoints, CoursePlan, LessonArtifact, ReviewResult
 from .validators import validate_breaking_points, validate_lesson, validate_plan
 
@@ -46,7 +47,7 @@ def _base_values(config: dict[str, Any]) -> dict[str, object]:
 def _provider(config: dict[str, Any], *, offline: bool) -> CachedProvider | OpenAIProvider:
     cache = CacheStore(AGENT_ROOT / "cache")
     if offline:
-        return CachedProvider(cache)
+        return CachedProvider(cache, require_complete=True)
     configured_model = str(config["generation"]["model"])
     model = os.environ.get("EDUCATIONPALS_MODEL", configured_model)
     return OpenAIProvider(cache, model)
@@ -79,9 +80,10 @@ def _generate_foundations(
     return points, plan
 
 
-def generate(*, offline: bool) -> None:
-    config = load_config()
-    provider = _provider(config, offline=offline)
+def _generate_artifacts(
+    provider: CachedProvider | OpenAIProvider,
+    config: dict[str, Any],
+) -> tuple[BreakingPoints, CoursePlan, list[LessonArtifact], list[ReviewResult]]:
     points, plan = _generate_foundations(provider, config)
     base = _base_values(config)
     prior_context: list[dict[str, str]] = []
@@ -164,20 +166,26 @@ def generate(*, offline: bool) -> None:
         else:  # pragma: no cover - loop always breaks or raises
             raise AssertionError("unreachable")
 
-    managed_files = [render_plan(ROOT, points, plan)]
-    for lesson_plan, artifact in zip(plan.lessons, accepted, strict=True):
-        managed_files.extend(render_lesson(ROOT, lesson_plan.slug, artifact))
+    return points, plan, accepted, reviews
 
-    manifest = {
-        "topic": config["submission"]["topic"],
-        "mode": "offline-cache-replay" if offline else "live-api",
-        "managed_files": managed_files,
-        "provider_records": provider.records,
-        "reviews": [review.model_dump(mode="json") for review in reviews],
-    }
-    (ROOT / "output" / "generation-manifest.json").write_text(
-        json.dumps(manifest, indent=2) + "\n",
-        encoding="utf-8",
+
+def generate(*, offline: bool, root: Path | None = None) -> None:
+    """Generate from validated structured responses into the supplied repository root."""
+    config = load_config()
+    provider = _provider(config, offline=offline)
+    points, plan, accepted, reviews = _generate_artifacts(provider, config)
+    destination_root = ROOT if root is None else root.resolve()
+    managed_files = [render_plan(destination_root, points, plan)]
+    for lesson_plan, artifact in zip(plan.lessons, accepted, strict=True):
+        managed_files.extend(render_lesson(destination_root, lesson_plan.slug, artifact))
+
+    render_manifest(
+        destination_root,
+        model=str(config["generation"]["model"]),
+        offline=offline,
+        provider_records=provider.records,
+        managed_files=managed_files,
+        reviews=reviews,
     )
     print(
         f"Generated {len(accepted)} lessons in "
@@ -218,7 +226,11 @@ def verify() -> None:
         "agent/prompts/30_review.md",
         "agent/prompts/40_revise.md",
     ]
-    failures = [f"Missing required path: {relative}" for relative in required if not (ROOT / relative).exists()]
+    failures = [
+        f"Missing required path: {relative}"
+        for relative in required
+        if not (ROOT / relative).exists()
+    ]
 
     if sys.version_info[:2] != (3, 12):
         failures.append(f"Python 3.12 required; running {sys.version.split()[0]}.")
@@ -240,22 +252,80 @@ def verify() -> None:
     cache_files = sorted((AGENT_ROOT / "cache").glob("*.json"))
     generated_lessons = sorted((ROOT / "course").glob("[0-9][0-9]-*.md"))
     manifest_path = ROOT / "output" / "generation-manifest.json"
-    committed_submission = False
+    if generated_lessons:
+        if not cache_files:
+            failures.append("Generated lessons require complete replayable agent/cache records.")
+        if not manifest_path.exists():
+            failures.append("Generated lessons exist without output/generation-manifest.json.")
+
+    replay_provider: CachedProvider | None = None
+    points: BreakingPoints | None = None
+    plan: CoursePlan | None = None
+    artifacts: list[LessonArtifact] = []
+    reviews: list[ReviewResult] = []
+    try:
+        replay_provider = _provider(config, offline=True)
+        points, plan, artifacts, reviews = _generate_artifacts(replay_provider, config)
+    except (RuntimeError, ValueError) as error:
+        failures.append(f"Offline replay validation failed: {error}")
+
     if manifest_path.exists():
         try:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            committed_submission = (
-                manifest.get("mode") == "committed AI-generated submission"
-                and manifest.get("generation_method") == "staged prompt orchestration in agent/"
-            )
-        except json.JSONDecodeError:
-            failures.append("output/generation-manifest.json is not valid JSON.")
-    if generated_lessons and not cache_files and not committed_submission:
-        failures.append(
-            "Generated lessons need agent/cache replay files or a committed generation manifest."
-        )
-    if generated_lessons and not manifest_path.exists():
-        failures.append("Generated lessons exist without output/generation-manifest.json.")
+            if not isinstance(manifest, dict):
+                raise ValueError("manifest root must be an object")
+            required_manifest = {
+                "schema_version",
+                "generator",
+                "model",
+                "mode",
+                "offline_replay",
+                "provider_records",
+                "managed_files",
+                "reviews",
+            }
+            if set(manifest) != required_manifest:
+                failures.append(
+                    "Manifest fields must exactly match the replay manifest contract; "
+                    f"missing={sorted(required_manifest - set(manifest))}, "
+                    f"unexpected={sorted(set(manifest) - required_manifest)}."
+                )
+            if manifest.get("schema_version") != 2:
+                failures.append("Manifest schema_version must be 2.")
+            if manifest.get("generator") != "agent.orchestrator":
+                failures.append("Manifest generator must be agent.orchestrator.")
+            if manifest.get("mode") not in {"offline-cache-replay", "live-api"}:
+                failures.append("Manifest mode must identify replay or live API generation.")
+            if not isinstance(manifest.get("offline_replay"), bool):
+                failures.append("Manifest offline_replay must be boolean.")
+            if replay_provider is not None:
+                if manifest.get("provider_records") != replay_provider.records:
+                    failures.append(
+                        "Manifest provider_records do not exactly match replay cache records."
+                    )
+                expected_reviews = [
+                    review.model_dump(mode="json") for review in reviews
+                ]
+                if manifest.get("reviews") != expected_reviews:
+                    failures.append(
+                        "Manifest reviews do not exactly match replayed review records."
+                    )
+                expected_files = (
+                    _expected_managed_files(plan, artifacts) if plan is not None else []
+                )
+                if manifest.get("managed_files") != expected_files:
+                    failures.append(
+                        "Manifest managed_files are incomplete or do not match renderer output."
+                    )
+                for record in expected_files:
+                    relative = record["path"]
+                    source = ROOT / relative
+                    if not source.is_file():
+                        failures.append(f"Manifest references missing generated file: {relative}.")
+                    elif record["sha256"] != sha256(source.read_bytes()).hexdigest():
+                        failures.append(f"Generated file hash does not match manifest: {relative}.")
+        except (json.JSONDecodeError, ValueError) as error:
+            failures.append(f"output/generation-manifest.json is invalid: {error}.")
 
     status = [
         "EducationPals repository verification",
@@ -274,3 +344,28 @@ def verify() -> None:
     print(rendered, end="")
     if failures:
         raise SystemExit(1)
+
+
+def _expected_managed_files(
+    plan: CoursePlan,
+    artifacts: list[LessonArtifact],
+) -> list[dict[str, str]]:
+    paths = ["course/00-course-plan.md"]
+    for lesson, artifact in zip(plan.lessons, artifacts, strict=True):
+        build_root = f"build/lesson_{artifact.lesson_number:02d}_{lesson.slug}"
+        paths.extend(
+            [
+                f"course/{artifact.lesson_number:02d}-{lesson.slug}.md",
+                *(f"{build_root}/{file.path}" for file in artifact.files),
+                f"{build_root}/BUILD.md",
+                f"output/lesson-{artifact.lesson_number:02d}-expected.txt",
+            ]
+        )
+    records: list[dict[str, str]] = []
+    for relative in sorted(paths):
+        source = ROOT / relative
+        if source.is_file():
+            records.append({"path": relative, "sha256": sha256(source.read_bytes()).hexdigest()})
+        else:
+            records.append({"path": relative, "sha256": ""})
+    return records

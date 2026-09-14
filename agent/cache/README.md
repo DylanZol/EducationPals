@@ -1,8 +1,12 @@
 # Cached model responses
 
-Each successful live call writes a sanitized JSON envelope here. Envelopes hold
-the parsed structured output, model name, prompt hash, token usage, and response
-ID. They never contain the API key.
+Each successful live call writes a sanitized schema-version-2 JSON envelope
+here. An envelope records its cache key, timestamp, model, response ID, prompt
+SHA-256, schema name, schema-normalized output SHA-256, optional usage, and the
+parsed structured output. Prompts and API keys are never stored.
 
-Commit the populated cache with the final submission. `--offline` replays these
-files and performs no network calls.
+Commit every stage: foundations, each lesson attempt, and each review. Offline
+replay validates the current prompt hash, output hash, and Pydantic schema
+before rendering; `verify` rejects incomplete envelopes, stale hashes, missing
+stages, and manifests that do not precisely record the replay calls. `--offline`
+performs no network calls.

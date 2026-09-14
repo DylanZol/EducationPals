@@ -1,22 +1,55 @@
 # Calibrate the Judge Instead of Trusting It: build-along
 
-The capstone consumes `cases.jsonl` from Lesson 1 and the normalized
-`judgments.jsonl` generated in Lesson 2. Run the Lesson 2 command first if the
-judgment artifact is absent.
+The capstone consumes `cases.jsonl` from Lesson 1 and the normalized `judgments.jsonl` generated in Lesson 2. Run the Lesson 2 command first if the judgment artifact is absent.
 
 ## Step 1
 
-Generate the validated judgment artifact.
+Check that the two handoff artifacts join before calculating any rates.
 
 ```console
-python build/lesson_02_judge-contract/judge.py
+python build/lesson_03_calibrate-grader/grader.py --inspect-inputs
 ```
 
-Visible check: `PASS: validated 8 judgments for 8 source cases`.
+Visible check:
+
+```text
+`PASS: joined 8 cases with 8 judgments`.
+```
 
 ## Step 2
 
-Join the human labels and judge predictions and print the calibration report.
+Build the confusion matrix from the human labels and cached judge decisions.
+
+```console
+python build/lesson_03_calibrate-grader/grader.py --matrix
+```
+
+Visible check:
+
+```text
+Confusion matrix (positive = judge approves answer)
+TP=3  FP=1  FN=1  TN=3
+```
+
+## Step 3
+
+Calculate precision and recall from the matrix instead of trusting an
+unexamined approval count.
+
+```console
+python build/lesson_03_calibrate-grader/grader.py --metrics
+```
+
+Visible check:
+
+```text
+Precision: 0.750
+Recall:    0.750
+```
+
+## Step 4
+
+Run the full calibration report to identify the specific misleading judgments.
 
 ```console
 python build/lesson_03_calibrate-grader/grader.py

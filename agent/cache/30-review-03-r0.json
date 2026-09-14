@@ -1,0 +1,18 @@
+{
+  "cache_key": "30-review-03-r0",
+  "cache_schema_version": 2,
+  "created_at": "2026-09-14T20:08:00+00:00",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "blocking_issues": [],
+    "non_blocking_notes": [
+      "Cached fixture reviewed for deterministic replay."
+    ],
+    "passed": true
+  },
+  "output_sha256": "f78edc5704c087b4a471f4184051fd2abce9b121fb11c5d716b18a14dda6ad29",
+  "prompt_sha256": "5a6552ffbfd2d5f843dfb85ec063f40b7158550db56e3e98a0cbba9b6ca94ec5",
+  "response_id": "offline-fixture-30-review-03-r0",
+  "schema": "agent.schemas.ReviewResult",
+  "usage": null
+}
